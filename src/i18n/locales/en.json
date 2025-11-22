@@ -1,0 +1,41 @@
+{
+    "common": {
+        "loading": "Loading...",
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "create": "Create",
+        "back": "Back"
+    },
+    "auth": {
+        "login": "Login",
+        "signup": "Sign Up",
+        "email": "Email",
+        "password": "Password",
+        "logout": "Logout",
+        "profile": "Profile",
+        "fullName": "Full Name",
+        "accountCreated": "Account created successfully!",
+        "signupFailed": "Failed to sign up",
+        "alreadyHaveAccount": "Already have an account? ",
+        "welcomeBack": "Welcome back!",
+        "loginFailed": "Failed to login",
+        "dontHaveAccount": "Don't have an account? "
+    },
+    "dashboard": {
+        "title": "My Decks",
+        "createDeck": "Create Deck",
+        "noDecks": "No decks found. Create one to start studying!",
+        "study": "Study"
+    },
+    "study": {
+        "showAnswer": "Show Answer",
+        "again": "Again",
+        "hard": "Hard",
+        "good": "Good",
+        "easy": "Easy",
+        "finished": "Session Finished!",
+        "backToDashboard": "Back to Dashboard"
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "common": {
+        "loading": "Carregando...",
+        "save": "Salvar",
+        "cancel": "Cancelar",
+        "delete": "Excluir",
+        "edit": "Editar",
+        "create": "Criar",
+        "back": "Voltar"
+    },
+    "auth": {
+        "login": "Entrar",
+        "signup": "Cadastrar",
+        "email": "E-mail",
+        "password": "Senha",
+        "logout": "Sair",
+        "profile": "Perfil",
+        "fullName": "Nome Completo",
+        "accountCreated": "Conta criada com sucesso!",
+        "signupFailed": "Falha ao criar conta",
+        "alreadyHaveAccount": "Já tem uma conta? ",
+        "welcomeBack": "Bem-vindo de volta!",
+        "loginFailed": "Falha ao entrar",
+        "dontHaveAccount": "Não tem uma conta? "
+    },
+    "dashboard": {
+        "title": "Meus Decks",
+        "createDeck": "Criar Deck",
+        "noDecks": "Nenhum deck encontrado. Crie um para começar a estudar!",
+        "study": "Estudar"
+    },
+    "study": {
+        "showAnswer": "Mostrar Resposta",
+        "again": "Errei",
+        "hard": "Difícil",
+        "good": "Bom",
+        "easy": "Fácil",
+        "finished": "Sessão Finalizada!",
+        "backToDashboard": "Voltar ao Dashboard"
+    }
+}
