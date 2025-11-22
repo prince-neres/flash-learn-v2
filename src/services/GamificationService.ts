@@ -11,7 +11,8 @@ import {
   getDocs 
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { toast } from 'react-toastify';
+import { toast } from '../components/ui/use-toast';
+import i18n from '../i18n';
 
 export const GamificationService = {
   awardPoints: async (userId: string, points: number) => {
@@ -51,7 +52,7 @@ export const GamificationService = {
         title,
         unlockedAt: new Date().toISOString(),
       });
-      toast.success(`Achievement Unlocked: ${title}! 🎉`);
+      toast({ title: i18n.t('gamification.achievement', { title }) });
     }
   },
 

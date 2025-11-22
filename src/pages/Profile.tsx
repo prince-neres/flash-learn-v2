@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
-import Button from '../components/Button';
-import { toast } from 'react-toastify';
-import { User, Globe, Volume2 } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "../context/AuthContext";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../lib/firebase";
+import { User, Globe, Volume2 } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { LoadingState } from "../components/LoadingState";
+import { useToast } from "../components/ui/use-toast";
+import { AVAILABLE_LANGUAGES } from "../i18n";
+import { Card, CardContent } from "../components/ui/card";
 
 const Profile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { currentUser } = useAuth();
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (currentUser) {
@@ -40,79 +44,79 @@ const Profile: React.FC = () => {
       await updateDoc(docRef, {
         'settings.language': lang
       });
-      toast.success('Language updated');
+      toast({ title: t('profile.languageUpdated') });
     } catch (error) {
       console.error(error);
     }
   };
 
-  if (loading) return <div className="p-8 text-center">{t('common.loading')}</div>;
+  if (loading) return <LoadingState message={t('common.loading')} />;
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-gray-800 rounded-xl border border-gray-700 p-8 mb-8">
-        <div className="flex items-center gap-6 mb-8">
-          <div className="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center text-4xl font-bold text-white">
-            {currentUser?.displayName?.[0] || <User className="w-12 h-12" />}
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-white">{currentUser?.displayName}</h1>
-            <p className="text-gray-400">{currentUser?.email}</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="bg-gray-900 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-blue-500">{userData?.points || 0}</div>
-            <div className="text-sm text-gray-500">Points</div>
-          </div>
-          <div className="bg-gray-900 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-green-500">{userData?.stats?.totalReviews || 0}</div>
-            <div className="text-sm text-gray-500">Reviews</div>
-          </div>
-          <div className="bg-gray-900 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-yellow-500">{userData?.stats?.streak || 0}</div>
-            <div className="text-sm text-gray-500">Day Streak</div>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <h3 className="text-xl font-semibold text-white border-b border-gray-700 pb-2">Settings</h3>
-          
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Globe className="w-5 h-5 text-gray-400" />
-              <span>Language</span>
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
+      <Card className="border-border/60 bg-card/90">
+        <CardContent className="flex flex-col gap-8 p-8">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center">
+            <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/10 text-4xl font-bold text-primary">
+              {currentUser?.displayName?.[0] || <User className="h-12 w-12" />}
             </div>
-            <div className="flex gap-2">
-              <Button 
-                size="sm" 
-                variant={i18n.language === 'en' ? 'primary' : 'secondary'}
-                onClick={() => changeLanguage('en')}
-              >
-                English
-              </Button>
-              <Button 
-                size="sm" 
-                variant={i18n.language === 'pt' ? 'primary' : 'secondary'}
-                onClick={() => changeLanguage('pt')}
-              >
-                Português
-              </Button>
+            <div>
+              <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">{t('auth.profile')}</p>
+              <h1 className="text-3xl font-semibold">{currentUser?.displayName || t('profile.fallbackName')}</h1>
+              <p className="text-muted-foreground">{currentUser?.email}</p>
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Volume2 className="w-5 h-5 text-gray-400" />
-              <span>Sound Effects</span>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="rounded-2xl border border-border/60 bg-background/60 p-4 text-center">
+              <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">{t('profile.points')}</p>
+              <p className="mt-2 text-3xl font-bold text-blue-500">{userData?.points || 0}</p>
             </div>
-            <div className="text-sm text-gray-500">
-              Coming soon
+            <div className="rounded-2xl border border-border/60 bg-background/60 p-4 text-center">
+              <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">{t('profile.reviews')}</p>
+              <p className="mt-2 text-3xl font-bold text-green-500">{userData?.stats?.totalReviews || 0}</p>
+            </div>
+            <div className="rounded-2xl border border-border/60 bg-background/60 p-4 text-center">
+              <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">{t('profile.streak')}</p>
+              <p className="mt-2 text-3xl font-bold text-yellow-500">{userData?.stats?.streak || 0}</p>
             </div>
           </div>
-        </div>
-      </div>
+
+          <div className="space-y-6">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">{t('profile.settings')}</p>
+              <h2 className="text-2xl font-semibold">{t('profile.personalization')}</h2>
+            </div>
+
+            <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-background/40 p-4 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-center gap-3 text-sm font-medium">
+                <Globe className="h-5 w-5 text-muted-foreground pr-4" />
+                {t('profile.languageLabel')}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {AVAILABLE_LANGUAGES.map((lang) => (
+                  <Button
+                    key={lang.value}
+                    size="sm"
+                    variant={i18n.language === lang.value ? 'default' : 'outline'}
+                    onClick={() => changeLanguage(lang.value)}
+                  >
+                    {lang.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-background/40 p-4 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-center gap-3 text-sm font-medium">
+                <Volume2 className="h-5 w-5 text-muted-foreground" />
+                {t('profile.soundLabel')}
+              </div>
+              <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">{t('profile.soundSoon')}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

@@ -21,15 +21,55 @@
         "alreadyHaveAccount": "Já tem uma conta? ",
         "welcomeBack": "Bem-vindo de volta!",
         "loginFailed": "Falha ao entrar",
-        "dontHaveAccount": "Não tem uma conta? "
+        "dontHaveAccount": "Não tem uma conta? ",
+        "loginSubtitle": "Continue de onde parou.",
+        "signupSubtitle": "Crie uma conta para começar a evoluir."
     },
     "dashboard": {
         "title": "Meus Decks",
         "createDeck": "Criar Deck",
         "noDecks": "Nenhum deck encontrado. Crie um para começar a estudar!",
-        "study": "Estudar"
+        "emptyHelper": "Organize os assuntos em decks para manter o ritmo.",
+        "study": "Estudar",
+        "loadError": "Não foi possível carregar seus decks.",
+        "createSuccess": "Deck criado!",
+        "createError": "Não foi possível criar o deck.",
+        "deleteSuccess": "Deck excluído.",
+        "deleteError": "Não foi possível excluir o deck.",
+        "confirmDelete": "Tem certeza de que deseja excluir este deck?",
+        "deleteDeckLabel": "Excluir o deck {{title}}",
+        "titlePlaceholder": "ex.: Vocabulário de Inglês",
+        "cardCount_one": "{{count}} flashcard",
+        "cardCount_other": "{{count}} flashcards"
+    },
+    "deckDetail": {
+        "notFound": "Deck não encontrado.",
+        "loadError": "Não foi possível carregar este deck.",
+        "createSuccess": "Carta adicionada!",
+        "createError": "Não foi possível adicionar a carta.",
+        "deleteSuccess": "Carta excluída.",
+        "deleteError": "Não foi possível excluir a carta.",
+        "confirmDelete": "Excluir esta carta?",
+        "addCard": "Adicionar carta",
+        "searchPlaceholder": "Buscar cartas...",
+        "emptyState": "Nenhuma carta ainda. Adicione a primeira!",
+        "frontLabel": "Frente",
+        "frontPlaceholder": "Termo ou pergunta",
+        "backLabel": "Verso",
+        "backPlaceholder": "Resposta ou definição",
+        "cardCount_one": "{{count}} carta",
+        "cardCount_other": "{{count}} cartas"
     },
     "study": {
+        "deckNotFound": "Deck não encontrado.",
+        "loadError": "Não foi possível carregar a sessão de estudo.",
+        "saveError": "Não foi possível salvar sua resposta.",
+        "completeMessage": "Excelente! Continue revisando para subir no ranking.",
+        "viewLeaderboard": "Ver ranking",
+        "noCardsTitle": "Tudo em dia",
+        "noCardsBody": "Volte mais tarde para revisar novas cartas.",
+        "progressCounter": "Carta {{current}} de {{total}}",
+        "answerLabel": "Resposta",
         "showAnswer": "Mostrar Resposta",
         "again": "Errei",
         "hard": "Difícil",
@@ -37,5 +77,27 @@
         "easy": "Fácil",
         "finished": "Sessão Finalizada!",
         "backToDashboard": "Voltar ao Dashboard"
+    },
+    "leaderboard": {
+        "title": "Ranking",
+        "subtitle": "Veja quem está mantendo a consistência nesta semana.",
+        "anonymous": "Aluno anônimo",
+        "reviewCount": "{{count}} revisões concluídas",
+        "points": "Pontos"
+    },
+    "profile": {
+        "languageUpdated": "Preferência de idioma salva.",
+        "fallbackName": "Estudante",
+        "points": "Pontos",
+        "reviews": "Revisões",
+        "streak": "Dias seguidos",
+        "settings": "Configurações",
+        "personalization": "Personalização",
+        "languageLabel": "Idioma",
+        "soundLabel": "Efeitos sonoros",
+        "soundSoon": "Em breve"
+    },
+    "gamification": {
+        "achievement": "Conquista desbloqueada: {{title}}"
     }
 }

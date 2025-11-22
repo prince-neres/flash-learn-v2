@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Plus, Trash2, Search } from 'lucide-react';
-import { DeckService, type Deck } from '../services/DeckService';
-import { CardService, type Card } from '../services/CardService';
-import { useAuth } from '../context/AuthContext';
-import Button from '../components/Button';
-import Modal from '../components/Modal';
-import { toast } from 'react-toastify';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { ArrowLeft, Plus, Trash2, Search } from "lucide-react";
+import { DeckService, type Deck } from "../services/DeckService";
+import { CardService, type Card } from "../services/CardService";
+import { useAuth } from "../context/AuthContext";
+import { Button } from "../components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../components/ui/dialog";
+import { Textarea } from "../components/ui/textarea";
+import { LoadingState } from "../components/LoadingState";
+import { useToast } from "../components/ui/use-toast";
+import { Input } from "../components/ui/input";
 
 const DeckDetail: React.FC = () => {
   const { deckId } = useParams<{ deckId: string }>();
@@ -24,6 +27,8 @@ const DeckDetail: React.FC = () => {
   const [front, setFront] = useState('');
   const [back, setBack] = useState('');
   const [saving, setSaving] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast();
 
   useEffect(() => {
     if (currentUser && deckId) {
@@ -39,7 +44,7 @@ const DeckDetail: React.FC = () => {
       ]);
       
       if (!deckData) {
-        toast.error('Deck not found');
+        toast({ title: t('deckDetail.notFound'), variant: 'destructive' });
         navigate('/');
         return;
       }
@@ -48,7 +53,7 @@ const DeckDetail: React.FC = () => {
       setCards(cardsData);
     } catch (error) {
       console.error(error);
-      toast.error('Failed to load deck data');
+      toast({ title: t('deckDetail.loadError'), variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -64,132 +69,127 @@ const DeckDetail: React.FC = () => {
         front,
         back,
       });
-      toast.success('Card created!');
+      toast({ title: t('deckDetail.createSuccess') });
       setFront('');
       setBack('');
       // Keep modal open for rapid entry
       loadData(); // Reload to show new card
     } catch (error) {
       console.error(error);
-      toast.error('Failed to create card');
+      toast({ title: t('deckDetail.createError'), variant: 'destructive' });
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeleteCard = async (cardId: string) => {
-    if (!window.confirm('Delete this card?')) return;
+    if (!window.confirm(t('deckDetail.confirmDelete'))) return;
     try {
       await CardService.deleteCard(deckId!, cardId);
-      setCards(cards.filter(c => c.id !== cardId));
-      toast.success('Card deleted');
+      setCards((prev) => prev.filter((c) => c.id !== cardId));
+      toast({ title: t('deckDetail.deleteSuccess') });
     } catch (error) {
       console.error(error);
-      toast.error('Failed to delete card');
+      toast({ title: t('deckDetail.deleteError'), variant: 'destructive' });
     }
   };
+  if (loading) return <LoadingState message={t('common.loading')} />;
 
-  if (loading) return <div className="p-8 text-center">{t('common.loading')}</div>;
+  const filteredCards = cards.filter((card) =>
+    [card.front, card.back].some((text) => text.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
   if (!deck) return null;
 
   return (
     <div>
-      <div className="flex items-center gap-4 mb-8">
-        <Button variant="ghost" onClick={() => navigate('/')}>
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold text-white">{deck.title}</h1>
-          <p className="text-gray-400">{cards.length} cards</p>
-        </div>
-        <div className="ml-auto">
-          <Button onClick={() => setIsModalOpen(true)}>
-            <Plus className="w-5 h-5 mr-2" />
-            Add Card
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" onClick={() => navigate('/')}
+            className="rounded-full border border-border/60 text-muted-foreground">
+            <ArrowLeft className="w-4 h-4" />
+            <span className="sr-only">{t('common.back')}</span>
           </Button>
+          <div>
+            <h1 className="text-3xl font-bold">{deck.title}</h1>
+            <p className="text-muted-foreground">
+              {t('deckDetail.cardCount', { count: cards.length })}
+            </p>
+          </div>
         </div>
+        <Button onClick={() => setIsModalOpen(true)} className="self-start md:self-auto">
+          <Plus className="w-5 h-5 mr-2" />
+          {t('deckDetail.addCard')}
+        </Button>
       </div>
 
-      <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
-        <div className="p-4 border-b border-gray-700 bg-gray-800/50">
+      <div className="rounded-3xl border border-border/60 bg-card/80 shadow-2xl">
+        <div className="border-b border-border/70 p-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-            <input 
-              type="text" 
-              placeholder="Search cards..." 
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder={t('deckDetail.searchPlaceholder')}
+              className="pl-10"
             />
           </div>
         </div>
-        
-        <div className="divide-y divide-gray-700">
-          {cards.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
-              No cards yet. Add one to get started!
+
+        <div className="divide-y divide-border/60">
+          {filteredCards.length === 0 ? (
+            <div className="p-8 text-center text-muted-foreground">
+              {t('deckDetail.emptyState')}
             </div>
           ) : (
-            cards.map((card) => (
-              <div key={card.id} className="p-4 hover:bg-gray-700/50 transition-colors flex items-center justify-between group">
-                <div className="grid grid-cols-2 gap-8 flex-1">
-                  <div className="text-white">{card.front}</div>
-                  <div className="text-gray-400">{card.back}</div>
+            filteredCards.map((card) => (
+              <div key={card.id} className="flex items-center justify-between gap-4 p-5 transition hover:bg-muted/30">
+                <div className="grid flex-1 gap-4 md:grid-cols-2">
+                  <p className="text-base font-medium">{card.front}</p>
+                  <p className="text-muted-foreground">{card.back}</p>
                 </div>
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-4">
-                  <button 
-                    onClick={() => handleDeleteCard(card.id)}
-                    className="p-2 text-gray-500 hover:text-red-500 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
+                <Button variant="ghost" size="icon" onClick={() => handleDeleteCard(card.id)}>
+                  <Trash2 className="w-4 h-4" />
+                </Button>
               </div>
             ))
           )}
         </div>
       </div>
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Add New Card"
-      >
-        <form onSubmit={handleCreateCard} className="space-y-4">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-300">Front (Question)</label>
-            <textarea
-              className="w-full h-24 bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 resize-none"
-              value={front}
-              onChange={(e) => setFront(e.target.value)}
-              placeholder="Enter the question..."
-              autoFocus
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-300">Back (Answer)</label>
-            <textarea
-              className="w-full h-24 bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-blue-500 resize-none"
-              value={back}
-              onChange={(e) => setBack(e.target.value)}
-              placeholder="Enter the answer..."
-            />
-          </div>
-          <div className="flex justify-end gap-3 mt-6">
-            <Button 
-              type="button" 
-              variant="ghost" 
-              onClick={() => setIsModalOpen(false)}
-            >
-              Done
-            </Button>
-            <Button 
-              type="submit" 
-              disabled={saving || !front.trim() || !back.trim()}
-            >
-              {saving ? 'Saving...' : 'Add Card'}
-            </Button>
-          </div>
-        </form>
-      </Modal>
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('deckDetail.addCard')}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleCreateCard} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">{t('deckDetail.frontLabel')}</label>
+              <Textarea
+                value={front}
+                onChange={(e) => setFront(e.target.value)}
+                placeholder={t('deckDetail.frontPlaceholder')}
+                autoFocus
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">{t('deckDetail.backLabel')}</label>
+              <Textarea
+                value={back}
+                onChange={(e) => setBack(e.target.value)}
+                placeholder={t('deckDetail.backPlaceholder')}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>
+                {t('common.cancel')}
+              </Button>
+              <Button type="submit" disabled={saving || !front.trim() || !back.trim()}>
+                {saving ? t('common.loading') : t('deckDetail.addCard')}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

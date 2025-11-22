@@ -14,8 +14,7 @@ import DeckDetail from "./pages/DeckDetail";
 import StudySession from "./pages/StudySession";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "./components/ui/toaster";
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({
     children,
@@ -76,7 +75,7 @@ function App() {
                     </Route>
                 </Routes>
             </Router>
-            <ToastContainer position="bottom-right" theme="dark" />
+            <Toaster />
         </AuthProvider>
     );
 }

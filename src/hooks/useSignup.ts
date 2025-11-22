@@ -2,14 +2,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { toast } from "react-toastify";
 import { auth, db } from "../lib/firebase";
 import { useTranslation } from "react-i18next";
+import { useToast } from "../components/ui/use-toast";
 
 export const useSignup = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const { toast } = useToast();
 
     const signup = async (name: string, email: string, password: string) => {
         setLoading(true);
@@ -42,11 +43,15 @@ export const useSignup = () => {
                 createdAt: new Date().toISOString(),
             });
 
-            toast.success(t("auth.accountCreated"));
+            toast({ title: t("auth.accountCreated") });
             navigate("/");
         } catch (error: any) {
             console.error(error);
-            toast.error(error.message || t("auth.signupFailed"));
+            toast({
+                title: t("auth.signupFailed"),
+                description: error?.message,
+                variant: "destructive",
+            });
         } finally {
             setLoading(false);
         }

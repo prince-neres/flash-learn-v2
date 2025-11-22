@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { CardService, type Card } from '../services/CardService';
-import { DeckService, type Deck } from '../services/DeckService';
-import Button from '../components/Button';
-import { toast } from 'react-toastify';
-import { ArrowLeft, CheckCircle } from 'lucide-react';
-import { clsx } from 'clsx';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { CardService, type Card } from "../services/CardService";
+import { DeckService, type Deck } from "../services/DeckService";
+import { Button } from "../components/ui/button";
+import { ArrowLeft, CheckCircle, Trophy } from "lucide-react";
+import { clsx } from "clsx";
+import { LoadingState } from "../components/LoadingState";
+import { useToast } from "../components/ui/use-toast";
 
 const StudySession: React.FC = () => {
   const { deckId } = useParams<{ deckId: string }>();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const [deck, setDeck] = useState<Deck | null>(null);
   const [dueCards, setDueCards] = useState<Card[]>([]);
@@ -34,7 +36,7 @@ const StudySession: React.FC = () => {
       ]);
       
       if (!deckData) {
-        toast.error('Deck not found');
+        toast({ title: t('study.deckNotFound'), variant: 'destructive' });
         navigate('/');
         return;
       }
@@ -43,7 +45,7 @@ const StudySession: React.FC = () => {
       setDueCards(cardsData);
     } catch (error) {
       console.error(error);
-      toast.error('Failed to load study session');
+      toast({ title: t('study.loadError'), variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -62,32 +64,46 @@ const StudySession: React.FC = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error('Failed to save progress');
+      toast({ title: t('study.saveError'), variant: 'destructive' });
     }
   };
 
-  if (loading) return <div className="p-8 text-center">{t('common.loading')}</div>;
+  if (loading) return <LoadingState message={t('common.loading')} />;
   if (!deck) return null;
 
   if (sessionComplete) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-        <CheckCircle className="w-20 h-20 text-green-500 mb-6" />
-        <h2 className="text-3xl font-bold text-white mb-4">{t('study.finished')}</h2>
-        <p className="text-gray-400 mb-8">You have reviewed all due cards for this deck.</p>
-        <Button onClick={() => navigate('/')}>
-          {t('study.backToDashboard')}
-        </Button>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-5">
+        <div className="rounded-full bg-green-500/10 p-6">
+          <CheckCircle className="h-16 w-16 text-green-500" />
+        </div>
+        <div>
+          <h2 className="text-3xl font-bold">{t('study.finished')}</h2>
+          <p className="text-muted-foreground">{t('study.completeMessage')}</p>
+        </div>
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={() => navigate('/leaderboard')}>
+            <Trophy className="mr-2 h-4 w-4" />
+            {t('study.viewLeaderboard')}
+          </Button>
+          <Button onClick={() => navigate('/')}>
+            {t('study.backToDashboard')}
+          </Button>
+        </div>
       </div>
     );
   }
 
   if (dueCards.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-        <CheckCircle className="w-20 h-20 text-blue-500 mb-6" />
-        <h2 className="text-3xl font-bold text-white mb-4">All Caught Up!</h2>
-        <p className="text-gray-400 mb-8">There are no cards due for review right now.</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-5">
+        <div className="rounded-full bg-blue-500/10 p-6">
+          <CheckCircle className="w-16 h-16 text-blue-500" />
+        </div>
+        <div>
+          <h2 className="text-3xl font-bold">{t('study.noCardsTitle')}</h2>
+          <p className="text-muted-foreground">{t('study.noCardsBody')}</p>
+        </div>
         <Button onClick={() => navigate('/')}>
           {t('study.backToDashboard')}
         </Button>
@@ -98,57 +114,58 @@ const StudySession: React.FC = () => {
   const currentCard = dueCards[currentIndex];
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <Button variant="ghost" onClick={() => navigate('/')}>
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Button variant="ghost" onClick={() => navigate('/')} className="w-fit">
           <ArrowLeft className="w-5 h-5 mr-2" />
-          Quit
+          {t('common.back')}
         </Button>
-        <div className="text-gray-400">
-          Card {currentIndex + 1} of {dueCards.length}
+        <div className="text-sm font-medium text-muted-foreground">
+          {t('study.progressCounter', { current: currentIndex + 1, total: dueCards.length })}
         </div>
       </div>
 
       <div 
-        className="perspective-1000 min-h-[400px] cursor-pointer"
+        className="relative cursor-pointer rounded-3xl border border-border/60 bg-card/80 p-1 shadow-2xl"
         onClick={() => !isFlipped && setIsFlipped(true)}
       >
-        <div className={clsx(
-          "relative w-full h-full transition-all duration-500 transform-style-3d",
-          isFlipped ? "rotate-y-180" : ""
-        )}>
-          {/* Front */}
-          <div className={clsx(
-            "absolute inset-0 w-full min-h-[400px] bg-gray-800 rounded-2xl border border-gray-700 p-8 flex items-center justify-center text-center backface-hidden",
-            isFlipped && "opacity-0 pointer-events-none" // Hide front when flipped to avoid z-fighting or interaction issues if any
-          )}>
-            <div className="text-2xl font-medium text-white">
-              {currentCard.front}
-            </div>
-            <div className="absolute bottom-4 text-gray-500 text-sm">
-              Click to reveal answer
-            </div>
-          </div>
-
-          {/* Back */}
-          <div className={clsx(
-            "absolute inset-0 w-full min-h-[400px] bg-gray-800 rounded-2xl border border-gray-700 p-8 flex flex-col items-center justify-center text-center backface-hidden rotate-y-180",
-            !isFlipped && "opacity-0 pointer-events-none"
-          )}>
-            <div className="text-gray-400 text-sm mb-4 uppercase tracking-wider">Answer</div>
-            <div className="text-2xl font-medium text-white mb-8">
-              {currentCard.back}
+        <div className="rounded-[26px] border border-white/5 bg-gradient-to-br from-primary/10 via-transparent to-transparent p-8">
+          <div className="perspective-1000 min-h-[360px]">
+            <div className={clsx(
+              "relative w-full min-h-[320px] transition-all duration-500 transform-style-3d",
+              isFlipped ? "rotate-y-180" : ""
+            )}>
+              <div className={clsx(
+                "absolute inset-0 flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-border/60 bg-card px-6 text-center text-lg font-semibold leading-relaxed shadow-xl backface-hidden",
+                isFlipped && "opacity-0"
+              )}>
+                <p>{currentCard.front}</p>
+                <span className="mt-8 text-xs uppercase tracking-[0.3em] text-muted-foreground">
+                  {t('study.showAnswer')}
+                </span>
+              </div>
+              <div className={clsx(
+                "absolute inset-0 flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-border/60 bg-card px-6 text-center text-lg font-semibold leading-relaxed shadow-xl backface-hidden rotate-y-180",
+                !isFlipped && "opacity-0"
+              )}>
+                <span className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+                  {t('study.answerLabel')}
+                </span>
+                <p className="mt-6 text-2xl font-semibold text-primary">
+                  {currentCard.back}
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {isFlipped && (
-        <div className="mt-8 grid grid-cols-4 gap-4">
+        <div className="grid gap-3 md:grid-cols-4">
           <Button 
-            variant="danger" 
+            variant="destructive" 
             onClick={() => handleRate(1)}
-            className="flex flex-col py-4"
+            className="flex flex-col gap-1 py-4"
           >
             <span className="font-bold">{t('study.again')}</span>
             <span className="text-xs opacity-75">&lt; 1m</span>
@@ -156,23 +173,21 @@ const StudySession: React.FC = () => {
           <Button 
             variant="secondary" 
             onClick={() => handleRate(3)}
-            className="flex flex-col py-4"
+            className="flex flex-col gap-1 py-4"
           >
             <span className="font-bold">{t('study.hard')}</span>
             <span className="text-xs opacity-75">2d</span>
           </Button>
           <Button 
-            variant="primary" 
             onClick={() => handleRate(4)}
-            className="flex flex-col py-4 bg-green-600 hover:bg-green-700"
+            className="flex flex-col gap-1 py-4 bg-green-500 text-white hover:bg-green-500/90"
           >
             <span className="font-bold">{t('study.good')}</span>
             <span className="text-xs opacity-75">4d</span>
           </Button>
           <Button 
-            variant="primary" 
             onClick={() => handleRate(5)}
-            className="flex flex-col py-4 bg-blue-500 hover:bg-blue-600"
+            className="flex flex-col gap-1 py-4 bg-blue-500 text-white hover:bg-blue-500/90"
           >
             <span className="font-bold">{t('study.easy')}</span>
             <span className="text-xs opacity-75">7d</span>

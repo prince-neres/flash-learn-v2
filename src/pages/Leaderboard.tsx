@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Trophy, Medal } from 'lucide-react';
-import { GamificationService } from '../services/GamificationService';
-import { useAuth } from '../context/AuthContext';
-import { clsx } from 'clsx';
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Trophy, Medal } from "lucide-react";
+import { GamificationService } from "../services/GamificationService";
+import { useAuth } from "../context/AuthContext";
+import { clsx } from "clsx";
+import { LoadingState } from "../components/LoadingState";
+import { Card } from "../components/ui/card";
 
 const Leaderboard: React.FC = () => {
   const { t } = useTranslation();
@@ -26,53 +28,53 @@ const Leaderboard: React.FC = () => {
     }
   };
 
-  if (loading) return <div className="p-8 text-center">{t('common.loading')}</div>;
+  if (loading) return <LoadingState message={t('common.loading')} />;
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="text-center mb-8">
-        <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-        <h1 className="text-3xl font-bold text-white">Leaderboard</h1>
-        <p className="text-gray-400">Top learners this week</p>
+    <div className="mx-auto max-w-2xl space-y-6">
+      <div className="text-center">
+        <div className="mx-auto mb-4 w-fit rounded-full border border-border/50 bg-background/80 p-4">
+          <Trophy className="h-12 w-12 text-yellow-400" />
+        </div>
+        <h1 className="text-3xl font-bold">{t('leaderboard.title')}</h1>
+        <p className="text-muted-foreground">{t('leaderboard.subtitle')}</p>
       </div>
 
-      <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
-        <div className="divide-y divide-gray-700">
+      <Card className="overflow-hidden border-border/50 bg-card/80">
+        <div className="divide-y divide-border/60">
           {users.map((user, index) => (
-            <div 
-              key={user.id} 
+            <div
+              key={user.id}
               className={clsx(
-                "flex items-center p-4 hover:bg-gray-700/50 transition-colors",
-                user.id === currentUser?.uid && "bg-blue-500/10 border-l-4 border-blue-500"
+                "flex items-center gap-4 p-4 transition hover:bg-muted/30",
+                user.id === currentUser?.uid && "border-l-4 border-primary bg-primary/5"
               )}
             >
-              <div className="w-12 text-center font-bold text-gray-500 text-xl">
+              <div className="w-12 text-center text-xl font-bold text-muted-foreground">
                 {index + 1}
               </div>
-              <div className="flex-1 flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-lg font-bold text-white">
+              <div className="flex flex-1 items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-background text-lg font-semibold">
                   {user.displayName?.[0] || '?'}
                 </div>
                 <div>
-                  <div className="font-medium text-white">
-                    {user.displayName || 'Anonymous'}
-                    {index < 3 && <Medal className="inline-block w-4 h-4 ml-2 text-yellow-500" />}
-                  </div>
-                  <div className="text-sm text-gray-400">
-                    {user.stats?.totalReviews || 0} reviews
-                  </div>
+                  <p className="text-base font-semibold">
+                    {user.displayName || t('leaderboard.anonymous')}
+                    {index < 3 && <Medal className="ml-2 inline-block h-4 w-4 text-yellow-400" />}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {t('leaderboard.reviewCount', { count: user.stats?.totalReviews || 0 })}
+                  </p>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-xl font-bold text-blue-400">
-                  {user.points || 0}
-                </div>
-                <div className="text-xs text-gray-500 uppercase">Points</div>
+                <p className="text-xl font-bold text-primary">{user.points || 0}</p>
+                <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">{t('leaderboard.points')}</p>
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </Card>
     </div>
   );
 };
