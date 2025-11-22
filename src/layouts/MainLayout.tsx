@@ -5,85 +5,127 @@ import { useAuth } from "../context/AuthContext";
 import { auth } from "../lib/firebase";
 import { LogOut, User as UserIcon } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../components/ui/dropdown-menu";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { LanguageSwitcher } from "../components/LanguageSwitcher";
 
 const MainLayout: React.FC = () => {
-  const { t } = useTranslation();
-  const { currentUser } = useAuth();
-  const navigate = useNavigate();
+    const { t } = useTranslation();
+    const { currentUser } = useAuth();
+    const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      navigate("/login");
-    } catch (error) {
-      console.error("Failed to log out", error);
-    }
-  };
+    const handleLogout = async () => {
+        try {
+            await auth.signOut();
+            navigate("/login");
+        } catch (error) {
+            console.error("Failed to log out", error);
+        }
+    };
 
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="app-shell min-h-screen">
-        <nav className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur-xl">
-          <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
-            <div className="flex items-center gap-6">
-              <Link to="/" className="text-xl font-semibold tracking-tight">
-                <span className="bg-gradient-to-r from-blue-500 via-violet-500 to-cyan-400 bg-clip-text text-transparent">
-                  Flash Learn
-                </span>
-              </Link>
-              <div className="hidden items-center gap-3 text-sm font-medium text-muted-foreground md:flex">
-                <Link to="/" className="rounded-full px-3 py-1.5 text-foreground transition hover:bg-accent hover:text-accent-foreground">
-                  {t("dashboard.title")}
-                </Link>
-                <Link to="/leaderboard" className="rounded-full px-3 py-1.5 transition hover:bg-accent hover:text-accent-foreground">
-                  {t('leaderboard.title')}
-                </Link>
-              </div>
+    return (
+        <div className="min-h-screen bg-background text-foreground">
+            <div className="app-shell min-h-screen">
+                <nav className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur-xl">
+                    <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
+                        <div className="flex items-center gap-6">
+                            <Link
+                                to="/"
+                                className="text-xl font-semibold tracking-tight"
+                            >
+                                <img
+                                    src="/logo.png"
+                                    alt="Flash Learn Logo"
+                                    className="inline h-8 w-8 mr-2"
+                                />
+                                <span className="hidden md:inline bg-gradient-to-r from-blue-500 via-violet-500 to-cyan-400 bg-clip-text text-transparent">
+                                    Flash Learn
+                                </span>
+                            </Link>
+                            <div className="hidden items-center gap-3 text-sm font-medium text-muted-foreground md:flex">
+                                <Link
+                                    to="/"
+                                    className="rounded-full px-3 py-1.5 text-foreground transition hover:bg-accent hover:text-accent-foreground"
+                                >
+                                    {t("dashboard.title")}
+                                </Link>
+                                <Link
+                                    to="/leaderboard"
+                                    className="rounded-full px-3 py-1.5 transition hover:bg-accent hover:text-accent-foreground"
+                                >
+                                    {t("leaderboard.title")}
+                                </Link>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <LanguageSwitcher />
+                            <ThemeToggle />
+                            {currentUser ? (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            className="gap-2 rounded-full bg-background/80"
+                                        >
+                                            <UserIcon className="h-4 w-4" />
+                                            <span className="hidden text-sm font-medium md:inline">
+                                                {currentUser.displayName ||
+                                                    currentUser.email}
+                                            </span>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent
+                                        align="end"
+                                        className="w-56"
+                                    >
+                                        <DropdownMenuLabel>
+                                            {t("auth.profile")}
+                                        </DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem asChild>
+                                            <Link to="/profile">
+                                                {t("auth.profile")}
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                            <Link to="/leaderboard">
+                                                {t("leaderboard.title")}
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            onClick={handleLogout}
+                                            className="text-destructive"
+                                        >
+                                            <LogOut className="mr-2 h-4 w-4" />
+                                            {t("auth.logout")}
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            ) : (
+                                <Button
+                                    variant="outline"
+                                    onClick={() => navigate("/login")}
+                                >
+                                    {t("auth.login")}
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+                </nav>
+                <main className="mx-auto w-full max-w-6xl px-4 py-8">
+                    <Outlet />
+                </main>
             </div>
-            <div className="flex items-center gap-3">
-              <LanguageSwitcher />
-              <ThemeToggle />
-              {currentUser ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="gap-2 rounded-full bg-background/80">
-                      <UserIcon className="h-4 w-4" />
-                      <span className="hidden text-sm font-medium md:inline">
-                        {currentUser.displayName || currentUser.email}
-                      </span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuLabel>{t("auth.profile")}</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link to="/profile">{t("auth.profile")}</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/leaderboard">{t('leaderboard.title')}</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="text-destructive">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      {t("auth.logout")}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <Button variant="outline" onClick={() => navigate("/login")}>{t("auth.login")}</Button>
-              )}
-            </div>
-          </div>
-        </nav>
-        <main className="mx-auto w-full max-w-6xl px-4 py-8">
-          <Outlet />
-        </main>
-      </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default MainLayout;
