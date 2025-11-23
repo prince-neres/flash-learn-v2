@@ -16,6 +16,7 @@ import { db } from '../lib/firebase';
 export interface Deck {
   id: string;
   ownerId: string;
+  ownerName?: string;
   title: string;
   category: string;
   tags: string[];
@@ -32,6 +33,7 @@ export const DeckService = {
       ...deck,
       ownerId,
       cardCount: 0,
+      isPublic: deck.isPublic ?? false,
       createdAt: serverTimestamp(),
     });
     return docRef.id;
@@ -65,4 +67,14 @@ export const DeckService = {
     const docRef = doc(db, COLLECTION_NAME, deckId);
     await deleteDoc(docRef);
   },
+
+  getPublicDecks: async () => {
+    const q = query(
+      collection(db, COLLECTION_NAME),
+      where('isPublic', '==', true),
+      orderBy('createdAt', 'desc')
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Deck));
+  }
 };

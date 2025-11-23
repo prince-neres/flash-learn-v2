@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { LoadingState } from "../components/LoadingState";
 import { useToast } from "../components/ui/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Switch } from "../components/ui/switch";
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -19,6 +20,8 @@ const Dashboard: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newDeckTitle, setNewDeckTitle] = useState('');
   const [creating, setCreating] = useState(false);
+  const [isDeckPublic, setIsDeckPublic] = useState(false);
+  const [visibilityLoading, setVisibilityLoading] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -49,10 +52,12 @@ const Dashboard: React.FC = () => {
         title: newDeckTitle,
         category: 'General',
         tags: [],
-        isPublic: false,
+        isPublic: isDeckPublic,
+        ownerName: currentUser?.displayName || currentUser?.email || undefined,
       });
       toast({ title: t('dashboard.createSuccess') });
       setNewDeckTitle('');
+      setIsDeckPublic(false);
       setIsModalOpen(false);
       loadDecks();
     } catch (error) {
@@ -72,6 +77,20 @@ const Dashboard: React.FC = () => {
     } catch (error) {
       console.error(error);
       toast({ title: t('dashboard.deleteError'), variant: 'destructive' });
+    }
+  };
+
+  const handleToggleVisibility = async (deck: Deck) => {
+    setVisibilityLoading(deck.id);
+    try {
+      await DeckService.updateDeck(deck.id, { isPublic: !deck.isPublic });
+      setDecks((prev) => prev.map((item) => item.id === deck.id ? { ...item, isPublic: !deck.isPublic } : item));
+      toast({ title: deck.isPublic ? t('visibility.toggleSuccessPrivate') : t('visibility.toggleSuccessPublic') });
+    } catch (error) {
+      console.error(error);
+      toast({ title: t('visibility.toggleError'), variant: 'destructive' });
+    } finally {
+      setVisibilityLoading(null);
     }
   };
 
@@ -110,11 +129,21 @@ const Dashboard: React.FC = () => {
               key={deck.id} 
               className="relative overflow-hidden border-border/50 bg-gradient-to-br from-background to-card/70 transition-all hover:-translate-y-1 hover:border-primary/50"
             >
-              <CardHeader className="flex flex-row items-start justify-between p-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary shadow-inner">
+              <CardHeader className="flex flex-row items-start justify-between">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary shadow-inner p-4">
                   <Book className="h-5 w-5" aria-hidden />
                 </div>
-                <button 
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    <span>{deck.isPublic ? t('visibility.public') : t('visibility.private')}</span>
+                    <Switch
+                      checked={deck.isPublic}
+                      onCheckedChange={() => handleToggleVisibility(deck)}
+                      disabled={visibilityLoading === deck.id}
+                      aria-label={t('visibility.fieldLabel')}
+                    />
+                  </div>
+                  <button 
                   type="button"
                   onClick={() => handleDeleteDeck(deck.id)}
                   className="rounded-full p-2 text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
@@ -122,6 +151,7 @@ const Dashboard: React.FC = () => {
                 >
                   <Trash2 className="h-4 w-4" aria-hidden />
                 </button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
@@ -162,6 +192,18 @@ const Dashboard: React.FC = () => {
               placeholder={t('dashboard.titlePlaceholder')}
               autoFocus
             />
+            <div className="rounded-2xl border border-border/60 bg-muted/10 p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">{t('visibility.fieldLabel')}</p>
+                  <p className="text-xs text-muted-foreground">{t('visibility.fieldHint')}</p>
+                </div>
+                <Switch checked={isDeckPublic} onCheckedChange={setIsDeckPublic} />
+              </div>
+              <p className="mt-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">
+                {isDeckPublic ? t('visibility.public') : t('visibility.private')}
+              </p>
+            </div>
             <DialogFooter>
               <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>
                 {t('common.cancel')}

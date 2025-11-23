@@ -90,7 +90,7 @@ const Profile: React.FC = () => {
 
             <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-background/40 p-4 md:flex-row md:items-center md:justify-between">
               <div className="flex items-center gap-3 text-sm font-medium">
-                <Globe className="h-5 w-5 text-muted-foreground pr-4" />
+                <Globe className="h-5 w-5 text-muted-foreground" />
                 {t('profile.languageLabel')}
               </div>
               <div className="flex flex-wrap gap-2">

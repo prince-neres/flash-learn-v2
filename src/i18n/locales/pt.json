@@ -23,7 +23,13 @@
         "loginFailed": "Falha ao entrar",
         "dontHaveAccount": "Não tem uma conta? ",
         "loginSubtitle": "Continue de onde parou.",
-        "signupSubtitle": "Crie uma conta para começar a evoluir."
+        "signupSubtitle": "Crie uma conta para começar a evoluir.",
+        "githubCta": "Continuar com GitHub",
+        "orContinue": "ou entre com e-mail",
+        "heroTitle": "Flashcards com decks da comunidade",
+        "heroSubtitle": "Estude com quem compartilha conhecimento e sessões adaptativas.",
+        "featureCommunity": "Decks compartilhados",
+        "featurePrivacy": "Progresso privado"
     },
     "dashboard": {
         "title": "Meus Decks",
@@ -41,6 +47,16 @@
         "titlePlaceholder": "ex.: Vocabulário de Inglês",
         "cardCount_one": "{{count}} flashcard",
         "cardCount_other": "{{count}} flashcards"
+    },
+    "visibility": {
+        "public": "Público",
+        "private": "Privado",
+        "toggleSuccessPublic": "Deck agora é público",
+        "toggleSuccessPrivate": "Deck agora é privado",
+        "toggleError": "Não foi possível atualizar a visibilidade",
+        "fieldLabel": "Visibilidade do deck",
+        "fieldHint": "Decks públicos podem ser descobertos por todos",
+        "badge": "Deck {{status}}"
     },
     "deckDetail": {
         "notFound": "Deck não encontrado.",
@@ -84,6 +100,14 @@
         "anonymous": "Aluno anônimo",
         "reviewCount": "{{count}} revisões concluídas",
         "points": "Pontos"
+    },
+    "publicDecks": {
+        "title": "Decks Públicos",
+        "subtitle": "Explore decks compartilhados pela comunidade e comece a estudar na hora.",
+        "emptyState": "Ainda não há decks públicos. Compartilhe o primeiro!",
+        "owner": "por {{name}}",
+        "open": "Abrir deck",
+        "study": "Estudar deck"
     },
     "profile": {
         "languageUpdated": "Preferência de idioma salva.",

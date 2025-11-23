@@ -62,6 +62,12 @@ const MainLayout: React.FC = () => {
                                 >
                                     {t("leaderboard.title")}
                                 </Link>
+                                <Link
+                                    to="/public"
+                                    className="rounded-full px-3 py-1.5 transition hover:bg-accent hover:text-accent-foreground"
+                                >
+                                    {t("publicDecks.title")}
+                                </Link>
                             </div>
                         </div>
                         <div className="flex items-center gap-3">
@@ -97,6 +103,11 @@ const MainLayout: React.FC = () => {
                                         <DropdownMenuItem asChild>
                                             <Link to="/leaderboard">
                                                 {t("leaderboard.title")}
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                            <Link to="/public">
+                                                {t("publicDecks.title")}
                                             </Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator />

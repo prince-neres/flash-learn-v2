@@ -14,6 +14,7 @@ import DeckDetail from "./pages/DeckDetail";
 import StudySession from "./pages/StudySession";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
+import PublicDecks from "./pages/PublicDecks";
 import { Toaster } from "./components/ui/toaster";
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({
@@ -60,6 +61,14 @@ function App() {
                             element={
                                 <PrivateRoute>
                                     <Leaderboard />
+                                </PrivateRoute>
+                            }
+                        />
+                        <Route
+                            path="public"
+                            element={
+                                <PrivateRoute>
+                                    <PublicDecks />
                                 </PrivateRoute>
                             }
                         />
