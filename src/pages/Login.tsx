@@ -21,6 +21,7 @@ const Login: React.FC = () => {
     const { t } = useTranslation();
     const { login, loading } = useLogin();
     const { loginWithGithub, loading: githubLoading } = useGithubAuth();
+    const currentYear = new Date().getFullYear();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,9 +29,9 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="relative min-h-screen overflow-hidden bg-background">
+        <div className="relative flex min-h-screen flex-col overflow-hidden bg-background">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.25),_transparent_60%)]" />
-            <div className="mx-auto grid min-h-screen w-full max-w-6xl items-center gap-12 px-4 py-12 lg:grid-cols-2">
+            <div className="relative z-10 mx-auto grid w-full max-w-6xl flex-1 items-center gap-12 px-4 py-12 lg:grid-cols-2">
                 <div className="space-y-8 text-center lg:text-left">
                     <div className="flex flex-col text-center items-center gap-2 rounded-full px-4 py-1 text-xs uppercase tracking-[0.3em] text-muted-foreground">
                         <Sparkles className="h-3.5 w-3.5 text-primary" />
@@ -161,6 +162,20 @@ const Login: React.FC = () => {
                     </CardContent>
                 </Card>
             </div>
+            <footer className="relative z-10 px-4 pb-8 text-center text-sm text-muted-foreground">
+                <p>
+                    © {currentYear} Flash Learn. Built by{" "}
+                    <a
+                        href="https://github.com/prince-neres"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-medium text-primary underline-offset-4 hover:underline"
+                    >
+                        Prince Neres
+                    </a>
+                    .
+                </p>
+            </footer>
         </div>
     );
 };

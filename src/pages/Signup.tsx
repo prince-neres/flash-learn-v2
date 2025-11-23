@@ -16,6 +16,7 @@ const Signup: React.FC = () => {
     const { t } = useTranslation();
     const { signup, loading } = useSignup();
     const { loginWithGithub, loading: githubLoading } = useGithubAuth();
+    const currentYear = new Date().getFullYear();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -23,9 +24,9 @@ const Signup: React.FC = () => {
     };
 
     return (
-        <div className="relative min-h-screen overflow-hidden bg-background">
+        <div className="relative flex min-h-screen flex-col overflow-hidden bg-background">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,_rgba(147,51,234,0.2),_transparent_55%)]" />
-            <div className="mx-auto grid min-h-screen w-full max-w-6xl items-center gap-12 px-4 py-12 lg:grid-cols-2">
+            <div className="relative z-10 mx-auto grid w-full max-w-6xl flex-1 items-center gap-12 px-4 py-12 lg:grid-cols-2">
                 <div className="order-last space-y-8 text-center lg:order-first lg:text-left">
                     <div className="space-y-4">
                         <h1 className="text-4xl font-semibold leading-tight text-pretty lg:text-5xl">
@@ -124,6 +125,20 @@ const Signup: React.FC = () => {
                     </CardContent>
                 </Card>
             </div>
+            <footer className="relative z-10 px-4 pb-8 text-center text-sm text-muted-foreground">
+                <p>
+                    © {currentYear} Flash Learn. Built by{" "}
+                    <a
+                        href="https://github.com/prince-neres"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-medium text-primary underline-offset-4 hover:underline"
+                    >
+                        Prince Neres
+                    </a>
+                    .
+                </p>
+            </footer>
         </div>
     );
 };
