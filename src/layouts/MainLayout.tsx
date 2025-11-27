@@ -43,11 +43,8 @@ const MainLayout: React.FC = () => {
                                 <img
                                     src="/logo.png"
                                     alt="Flash Learn Logo"
-                                    className="inline h-8 w-8 mr-2"
+                                    className="inline h-8 w-8"
                                 />
-                                <span className="hidden md:inline bg-gradient-to-r from-blue-500 via-violet-500 to-cyan-400 bg-clip-text text-transparent">
-                                    Flash Learn
-                                </span>
                             </Link>
                             <div className="hidden items-center gap-3 text-sm font-medium text-muted-foreground md:flex">
                                 <Link
